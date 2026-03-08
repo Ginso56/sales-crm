@@ -9,6 +9,7 @@ import CallLogModal from '@/components/calls/CallLogModal.vue';
 import CallStatusBadge from '@/components/calls/CallStatusBadge.vue';
 import NoAnswerButton from '@/components/calls/NoAnswerButton.vue';
 import ScheduleCallModal from '@/components/calls/ScheduleCallModal.vue';
+import Modal from '@/components/ui/Modal.vue';
 import Button from '@/components/ui/Button.vue';
 import Badge from '@/components/ui/Badge.vue';
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue';

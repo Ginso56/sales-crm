@@ -73,6 +73,10 @@ const callStats = computed(() => {
   return { total: logs.length, answered, noAnswer };
 });
 
+const isFirstCall = computed(() => {
+  return !callsStore.callLogs.some(l => l.status === 'answered');
+});
+
 async function handleSave(data: Partial<Company>): Promise<void> {
   await saveCompany(companyId, data);
 }
@@ -421,6 +425,7 @@ const tabs = [
       :open="showCallModal"
       :company-id="companyId"
       :company-name="company?.name || ''"
+      :is-first-call="isFirstCall"
       @close="showCallModal = false"
       @submit="handleCallSubmit"
     />

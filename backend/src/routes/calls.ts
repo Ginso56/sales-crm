@@ -93,17 +93,27 @@ export async function callRoutes(fastify: FastifyInstance): Promise<void> {
 
   fastify.put('/api/calls/:id', async (request, reply) => {
     const { id } = request.params as { id: string };
-    const schema = z.object({
+    const updateSchema = z.object({
+      shipmentCount: z.number().int().optional(),
+      shipmentDestinations: z.array(z.string()).optional(),
+      shippingCompany: z.string().optional(),
       notes: z.string().optional(),
     });
-    const parsed = schema.safeParse(request.body);
+    const parsed = updateSchema.safeParse(request.body);
     if (!parsed.success) {
       return reply.status(400).send({ error: 'Invalid input' });
     }
 
     // Fetch existing call
     const existing = await db
-      .select({ id: callLogs.id, notes: callLogs.notes, companyId: callLogs.companyId })
+      .select({
+        id: callLogs.id,
+        companyId: callLogs.companyId,
+        shipmentCount: callLogs.shipmentCount,
+        shipmentDestinations: callLogs.shipmentDestinations,
+        shippingCompany: callLogs.shippingCompany,
+        notes: callLogs.notes,
+      })
       .from(callLogs)
       .where(eq(callLogs.id, id));
 
@@ -111,23 +121,34 @@ export async function callRoutes(fastify: FastifyInstance): Promise<void> {
       return reply.status(404).send({ error: 'Call not found' });
     }
 
-    const oldNotes = existing[0].notes || '';
-    const newNotes = parsed.data.notes || '';
+    const old = existing[0];
+    const companyId = old.companyId!;
+    const updates: Record<string, unknown> = {};
 
-    if (oldNotes !== newNotes) {
-      await db
-        .update(callLogs)
-        .set({ notes: newNotes })
-        .where(eq(callLogs.id, id));
+    // Track changes for audit
+    if (parsed.data.notes !== undefined && (old.notes || '') !== parsed.data.notes) {
+      updates.notes = parsed.data.notes;
+      await writeAuditLog(companyId, request.user.userId, 'poznámka hovoru', old.notes || null, parsed.data.notes || null);
+    }
+    if (parsed.data.shippingCompany !== undefined && (old.shippingCompany || '') !== parsed.data.shippingCompany) {
+      updates.shippingCompany = parsed.data.shippingCompany;
+      await writeAuditLog(companyId, request.user.userId, 'prepravca', old.shippingCompany || null, parsed.data.shippingCompany || null);
+    }
+    if (parsed.data.shipmentCount !== undefined && (old.shipmentCount || 0) !== parsed.data.shipmentCount) {
+      updates.shipmentCount = parsed.data.shipmentCount;
+      await writeAuditLog(companyId, request.user.userId, 'počet zásielok', String(old.shipmentCount || 0), String(parsed.data.shipmentCount));
+    }
+    if (parsed.data.shipmentDestinations !== undefined) {
+      const oldDest = (old.shipmentDestinations || []).join(', ');
+      const newDest = parsed.data.shipmentDestinations.join(', ');
+      if (oldDest !== newDest) {
+        updates.shipmentDestinations = parsed.data.shipmentDestinations;
+        await writeAuditLog(companyId, request.user.userId, 'destinácie', oldDest || null, newDest || null);
+      }
+    }
 
-      // Write audit log
-      await writeAuditLog(
-        existing[0].companyId!,
-        request.user.userId,
-        'poznámka hovoru',
-        oldNotes || null,
-        newNotes || null
-      );
+    if (Object.keys(updates).length > 0) {
+      await db.update(callLogs).set(updates).where(eq(callLogs.id, id));
     }
 
     return reply.send({ success: true });

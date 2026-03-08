@@ -33,10 +33,20 @@ export const useCallsStore = defineStore('calls', () => {
     return response.data;
   }
 
-  async function updateCallNote(callId: string, notes: string): Promise<void> {
-    await api.put(`/api/calls/${callId}`, { notes });
+  async function updateCall(callId: string, data: {
+    notes?: string;
+    shipmentCount?: number;
+    shipmentDestinations?: string[];
+    shippingCompany?: string;
+  }): Promise<void> {
+    await api.put(`/api/calls/${callId}`, data);
     const log = callLogs.value.find(l => l.id === callId);
-    if (log) log.notes = notes;
+    if (log) {
+      if (data.notes !== undefined) log.notes = data.notes;
+      if (data.shipmentCount !== undefined) log.shipmentCount = data.shipmentCount;
+      if (data.shipmentDestinations !== undefined) log.shipmentDestinations = data.shipmentDestinations;
+      if (data.shippingCompany !== undefined) log.shippingCompany = data.shippingCompany;
+    }
   }
 
   async function fetchTodayCalls(userId: string): Promise<void> {
@@ -55,7 +65,7 @@ export const useCallsStore = defineStore('calls', () => {
     loading,
     fetchCallLogs,
     logCall,
-    updateCallNote,
+    updateCall,
     fetchTodayCalls,
   };
 });

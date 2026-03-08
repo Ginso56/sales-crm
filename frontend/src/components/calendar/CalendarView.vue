@@ -15,7 +15,8 @@ const router = useRouter();
 const calendarOptions = ref<CalendarOptions>({
   plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
   locale: skLocale,
-  initialView: 'dayGridMonth',
+  initialView: 'timeGridDay',
+  nowIndicator: true,
   headerToolbar: {
     left: 'prev,next today',
     center: 'title',

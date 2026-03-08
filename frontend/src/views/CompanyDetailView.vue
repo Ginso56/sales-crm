@@ -38,71 +38,28 @@ const showStatusDropdown = ref(false);
 
 const allStatuses: CompanyStatus[] = ['new', 'contacted', 'interested', 'not_interested', 'closed'];
 
-// Edit call modal
-const showEditCallModal = ref(false);
-const editCallId = ref('');
-const editForm = ref({
-  shippingCompany: '',
-  shipmentCount: 0,
-  shipmentDestinations: [] as string[],
-  notes: '',
-});
-const editDestInput = ref('');
-const editCarrierInput = ref('');
-const editCarriers = ref<string[]>([]);
+// Inline note editing
+const editingCallId = ref<string | null>(null);
+const editingNotes = ref('');
 
-function openEditCall(log: { id: string; shippingCompany?: string; shipmentCount?: number; shipmentDestinations?: string[]; notes?: string }): void {
-  editCallId.value = log.id;
-  const carriers = log.shippingCompany ? log.shippingCompany.split(', ').filter(Boolean) : [];
-  editCarriers.value = [...carriers];
-  editForm.value = {
-    shippingCompany: log.shippingCompany || '',
-    shipmentCount: log.shipmentCount || 0,
-    shipmentDestinations: [...(log.shipmentDestinations || [])],
-    notes: log.notes || '',
-  };
-  editDestInput.value = '';
-  editCarrierInput.value = '';
-  showEditCallModal.value = true;
+function startEditNote(callId: string, currentNotes: string): void {
+  editingCallId.value = callId;
+  editingNotes.value = currentNotes || '';
 }
 
-function editAddDest(): void {
-  const val = editDestInput.value.trim();
-  if (val && !editForm.value.shipmentDestinations.includes(val)) {
-    editForm.value.shipmentDestinations.push(val);
-    editDestInput.value = '';
-  }
+function cancelEditNote(): void {
+  editingCallId.value = null;
+  editingNotes.value = '';
 }
 
-function editRemoveDest(idx: number): void {
-  editForm.value.shipmentDestinations.splice(idx, 1);
-}
-
-function editAddCarrier(): void {
-  const val = editCarrierInput.value.trim();
-  if (val && !editCarriers.value.includes(val)) {
-    editCarriers.value.push(val);
-    editCarrierInput.value = '';
-  }
-}
-
-function editRemoveCarrier(idx: number): void {
-  editCarriers.value.splice(idx, 1);
-}
-
-async function saveEditCall(): Promise<void> {
+async function saveEditNote(callId: string): Promise<void> {
   try {
-    await callsStore.updateCall(editCallId.value, {
-      shippingCompany: editCarriers.value.join(', '),
-      shipmentCount: editForm.value.shipmentCount,
-      shipmentDestinations: editForm.value.shipmentDestinations,
-      notes: editForm.value.notes,
-    });
-    showEditCallModal.value = false;
-    toast.success('Hovor aktualizovaný');
+    await callsStore.updateCall(callId, { notes: editingNotes.value });
+    editingCallId.value = null;
+    toast.success('Poznámka aktualizovaná');
     await companiesStore.fetchHistory(companyId);
   } catch {
-    toast.error('Nepodarilo sa uložiť zmeny');
+    toast.error('Nepodarilo sa uložiť poznámku');
   }
 }
 
@@ -470,20 +427,39 @@ const tabs = [
                     <span v-if="log.shipmentDestinations?.length"> do {{ log.shipmentDestinations.join(', ') }}</span>
                   </div>
 
-                  <p v-if="log.notes" class="text-sm text-gray-500 mt-1 italic">{{ log.notes }}</p>
+                  <!-- Inline note edit -->
+                  <div v-if="editingCallId === log.id" class="mt-2">
+                    <textarea
+                      v-model="editingNotes"
+                      rows="2"
+                      class="input-field text-sm w-full"
+                      placeholder="Poznámka..."
+                    />
+                    <div class="flex gap-2 mt-1.5">
+                      <button class="text-xs font-medium text-primary-600 hover:text-primary-800" @click="saveEditNote(log.id)">Uložiť</button>
+                      <button class="text-xs text-gray-500 hover:text-gray-700" @click="cancelEditNote">Zrušiť</button>
+                    </div>
+                  </div>
+                  <div v-else-if="log.notes" class="flex items-start gap-1.5 mt-1">
+                    <p class="text-sm text-gray-500 italic">{{ log.notes }}</p>
+                    <button
+                      class="text-gray-300 hover:text-primary-600 flex-shrink-0 mt-0.5"
+                      title="Upraviť poznámku"
+                      @click="startEditNote(log.id, log.notes)"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <button
+                    v-else
+                    class="text-xs text-gray-300 hover:text-primary-600 mt-1 italic"
+                    @click="startEditNote(log.id, '')"
+                  >
+                    + Pridať poznámku
+                  </button>
                 </div>
-
-                <!-- Edit button -->
-                <button
-                  v-if="log.status === 'answered'"
-                  class="text-gray-300 hover:text-primary-600 flex-shrink-0 mt-1"
-                  title="Upraviť hovor"
-                  @click="openEditCall(log)"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
-                </button>
               </div>
             </div>
           </div>
@@ -519,82 +495,5 @@ const tabs = [
       @submit="handleScheduleSubmit"
     />
 
-    <!-- Edit Call Modal -->
-    <Modal :open="showEditCallModal" title="Upraviť hovor" @close="showEditCallModal = false">
-      <form class="space-y-4" @submit.prevent="saveEditCall">
-        <!-- Carriers -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Prepravné spoločnosti</label>
-          <div class="flex gap-2 mb-2">
-            <input
-              v-model="editCarrierInput"
-              type="text"
-              class="input-field flex-1"
-              placeholder="Pridať prepravcu"
-              @keydown.enter.prevent="editAddCarrier"
-            />
-            <Button type="button" variant="secondary" size="sm" @click="editAddCarrier">Pridať</Button>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <span
-              v-for="(c, idx) in editCarriers"
-              :key="idx"
-              class="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full text-xs"
-            >
-              {{ c }}
-              <button type="button" class="hover:text-red-500" @click="editRemoveCarrier(idx)">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </span>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Počet zásielok</label>
-          <input v-model.number="editForm.shipmentCount" type="number" min="0" class="input-field" />
-        </div>
-
-        <!-- Destinations -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Destinácie zásielok</label>
-          <div class="flex gap-2 mb-2">
-            <input
-              v-model="editDestInput"
-              type="text"
-              class="input-field flex-1"
-              placeholder="Pridať krajinu"
-              @keydown.enter.prevent="editAddDest"
-            />
-            <Button type="button" variant="secondary" size="sm" @click="editAddDest">Pridať</Button>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <span
-              v-for="(dest, idx) in editForm.shipmentDestinations"
-              :key="idx"
-              class="inline-flex items-center gap-1 px-2.5 py-1 bg-primary-100 text-primary-700 rounded-full text-xs"
-            >
-              {{ dest }}
-              <button type="button" class="hover:text-red-500" @click="editRemoveDest(idx)">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </span>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Poznámky</label>
-          <textarea v-model="editForm.notes" rows="3" class="input-field" placeholder="Poznámky z hovoru..." />
-        </div>
-
-        <div class="flex justify-end gap-3 pt-4">
-          <Button variant="ghost" type="button" @click="showEditCallModal = false">Zrušiť</Button>
-          <Button type="submit">Uložiť zmeny</Button>
-        </div>
-      </form>
-    </Modal>
   </DashboardShell>
 </template>

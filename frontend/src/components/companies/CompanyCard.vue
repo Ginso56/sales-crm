@@ -38,7 +38,9 @@ function save(): void {
   if (form.value.phone) {
     form.value.phone = formatPhone(form.value.phone);
   }
-  emit('save', form.value);
+  // Only send fields the backend accepts
+  const { name, phone, email, website, address, country, industry, status, assignedTo } = form.value;
+  emit('save', { name, phone, email, website, address, country, industry, status, assignedTo });
   editing.value = false;
 }
 </script>

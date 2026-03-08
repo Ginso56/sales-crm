@@ -38,32 +38,7 @@ const showStatusDropdown = ref(false);
 
 const allStatuses: CompanyStatus[] = ['new', 'contacted', 'interested', 'not_interested', 'closed'];
 
-// Inline note editing
-const editingCallId = ref<string | null>(null);
-const editingNotes = ref('');
-
-function startEditNote(callId: string, currentNotes: string): void {
-  editingCallId.value = callId;
-  editingNotes.value = currentNotes || '';
-}
-
-function cancelEditNote(): void {
-  editingCallId.value = null;
-  editingNotes.value = '';
-}
-
-async function saveEditNote(callId: string): Promise<void> {
-  try {
-    await callsStore.updateCall(callId, { notes: editingNotes.value });
-    editingCallId.value = null;
-    toast.success('Poznámka aktualizovaná');
-    await companiesStore.fetchHistory(companyId);
-  } catch {
-    toast.error('Nepodarilo sa uložiť poznámku');
-  }
-}
-
-// Full call edit modal (for calls with shipping info)
+// Edit call modal
 const showEditCallModal = ref(false);
 const editCallId = ref('');
 const editCarriers = ref<string[]>([]);
@@ -476,54 +451,25 @@ const tabs = [
                     <span class="text-xs text-gray-400">{{ formatDateTime(log.calledAt) }}</span>
                   </div>
                   <p class="text-xs text-gray-500">{{ log.salesmanName }}</p>
-                  <div v-if="log.status === 'answered' && (log.shippingCompany || log.shipmentCount)" class="flex items-center gap-1.5 text-sm text-gray-600 mt-1.5">
+                  <div v-if="log.shippingCompany || log.shipmentCount" class="text-sm text-gray-600 mt-1.5">
                     <span class="font-medium">{{ log.shippingCompany }}</span>
                     <span v-if="log.shipmentCount"> · {{ log.shipmentCount }} zásielok</span>
                     <span v-if="log.shipmentDestinations?.length"> do {{ log.shipmentDestinations.join(', ') }}</span>
-                    <button
-                      class="text-gray-300 hover:text-primary-600 flex-shrink-0 ml-1"
-                      title="Upraviť údaje hovoru"
-                      @click="openEditCall(log)"
-                    >
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                      </svg>
-                    </button>
                   </div>
-
-                  <!-- Inline note edit -->
-                  <div v-if="editingCallId === log.id" class="mt-2">
-                    <textarea
-                      v-model="editingNotes"
-                      rows="2"
-                      class="input-field text-sm w-full"
-                      placeholder="Poznámka..."
-                    />
-                    <div class="flex gap-2 mt-1.5">
-                      <button class="text-xs font-medium text-primary-600 hover:text-primary-800" @click="saveEditNote(log.id)">Uložiť</button>
-                      <button class="text-xs text-gray-500 hover:text-gray-700" @click="cancelEditNote">Zrušiť</button>
-                    </div>
-                  </div>
-                  <div v-else-if="log.notes" class="flex items-start gap-1.5 mt-1">
-                    <p class="text-sm text-gray-500 italic">{{ log.notes }}</p>
-                    <button
-                      class="text-gray-300 hover:text-primary-600 flex-shrink-0 mt-0.5"
-                      title="Upraviť poznámku"
-                      @click="startEditNote(log.id, log.notes)"
-                    >
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                      </svg>
-                    </button>
-                  </div>
-                  <button
-                    v-else
-                    class="text-xs text-gray-300 hover:text-primary-600 mt-1 italic"
-                    @click="startEditNote(log.id, '')"
-                  >
-                    + Pridať poznámku
-                  </button>
+                  <p v-if="log.notes" class="text-sm text-gray-500 mt-1 italic">{{ log.notes }}</p>
                 </div>
+
+                <!-- Edit button -->
+                <button
+                  v-if="log.status === 'answered'"
+                  class="text-gray-300 hover:text-primary-600 flex-shrink-0 self-center"
+                  title="Upraviť"
+                  @click="openEditCall(log)"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </button>
               </div>
             </div>
           </div>

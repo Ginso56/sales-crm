@@ -4,6 +4,7 @@ import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import skLocale from '@fullcalendar/core/locales/sk';
 import { useCalendarStore } from '@/stores/calendar';
 import { useRouter } from 'vue-router';
 import type { EventInput, CalendarOptions } from '@fullcalendar/core';
@@ -13,12 +14,15 @@ const router = useRouter();
 
 const calendarOptions = ref<CalendarOptions>({
   plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+  locale: skLocale,
   initialView: 'dayGridMonth',
   headerToolbar: {
     left: 'prev,next today',
     center: 'title',
     right: 'dayGridMonth,timeGridWeek,timeGridDay',
   },
+  slotMinTime: '06:00:00',
+  slotMaxTime: '22:00:00',
   events: [],
   eventClick: (info) => {
     const companyId = info.event.extendedProps.companyId as string;

@@ -149,9 +149,9 @@ const tabs = [
       </router-link>
 
       <!-- Hero Header Card -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
         <!-- Top colored bar -->
-        <div class="h-1.5" :class="{
+        <div class="h-1.5 rounded-t-xl" :class="{
           'bg-indigo-500': company.status === 'new',
           'bg-yellow-500': company.status === 'contacted',
           'bg-green-500': company.status === 'interested',
@@ -191,7 +191,7 @@ const tabs = [
                       </button>
                       <div
                         v-if="showStatusDropdown"
-                        class="absolute left-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[160px]"
+                        class="absolute left-0 top-full mt-1 z-[100] bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[160px]"
                       >
                         <button
                           v-for="s in allStatuses"

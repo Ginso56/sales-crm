@@ -4,6 +4,7 @@ import { db } from '../db/connection.js';
 import { notes, noteAttachments, users } from '../db/schema.js';
 import { eq, desc } from 'drizzle-orm';
 import { authMiddleware } from '../middleware/authMiddleware.js';
+import { writeAuditLog } from '../services/auditService.js';
 import { v2 as cloudinary } from 'cloudinary';
 
 const createNoteSchema = z.object({
@@ -86,6 +87,8 @@ export async function noteRoutes(fastify: FastifyInstance): Promise<void> {
       })
       .returning();
 
+    await writeAuditLog(companyId, request.user.userId, 'nová poznámka', null, parsed.data.content.substring(0, 200));
+
     return reply.status(201).send(result[0]);
   });
 
@@ -120,6 +123,7 @@ export async function noteRoutes(fastify: FastifyInstance): Promise<void> {
     }
 
     await db.delete(notes).where(eq(notes.id, id));
+    await writeAuditLog(noteData.companyId!, request.user.userId, 'poznámka vymazaná', noteData.content?.substring(0, 200) || null, null);
     return reply.send({ message: 'Note deleted' });
   });
 
@@ -160,6 +164,9 @@ export async function noteRoutes(fastify: FastifyInstance): Promise<void> {
           fileName: data.filename,
         })
         .returning();
+
+      const noteForAudit = note[0];
+      await writeAuditLog(noteForAudit.companyId!, request.user.userId, 'nová príloha', null, data.filename || 'súbor');
 
       return reply.status(201).send(attachment[0]);
     } catch (error) {

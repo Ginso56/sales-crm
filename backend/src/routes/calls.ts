@@ -45,12 +45,23 @@ export async function callRoutes(fastify: FastifyInstance): Promise<void> {
       })
       .returning();
 
+    // Audit: log new call
+    const statusLabels: Record<string, string> = {
+      answered: 'zdvihnutý', no_answer: 'nezdvihnutý', scheduled: 'naplánovaný', callback: 'spätný hovor',
+    };
+    let callDesc = `Hovor: ${statusLabels[data.status] || data.status}`;
+    if (data.shippingCompany) callDesc += ` | ${data.shippingCompany}`;
+    if (data.shipmentCount) callDesc += ` | ${data.shipmentCount} zásielok`;
+    if (data.notes) callDesc += ` | ${data.notes}`;
+    await writeAuditLog(data.companyId, request.user.userId, 'nový hovor', null, callDesc);
+
     // If no_answer, set priority_followup on company
     if (data.status === 'no_answer') {
       await db
         .update(companies)
         .set({ priorityFollowup: true, updatedAt: new Date() })
         .where(eq(companies.id, data.companyId));
+      await writeAuditLog(data.companyId, request.user.userId, 'prioritný followup', 'nie', 'áno');
     }
 
     // If answered, update company status to contacted if still new

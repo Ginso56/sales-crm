@@ -5,6 +5,7 @@ import { scheduledCalls, companies, users } from '../db/schema.js';
 import { eq, and, gte, lte, or, sql, desc } from 'drizzle-orm';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { roleGuard } from '../middleware/roleGuard.js';
+import { writeAuditLog } from '../services/auditService.js';
 
 const scheduleSchema = z.object({
   companyId: z.string().uuid(),
@@ -94,6 +95,9 @@ export async function calendarRoutes(fastify: FastifyInstance): Promise<void> {
       })
       .returning();
 
+    const scheduledDate = new Date(parsed.data.scheduledFor).toLocaleString('sk-SK');
+    await writeAuditLog(parsed.data.companyId, request.user.userId, 'naplánovaný hovor', null, `${parsed.data.title} (${scheduledDate})`);
+
     return reply.status(201).send(result[0]);
   });
 
@@ -104,6 +108,12 @@ export async function calendarRoutes(fastify: FastifyInstance): Promise<void> {
       return reply.status(400).send({ error: 'Invalid input', details: parsed.error.flatten() });
     }
 
+    // Fetch existing to get old status and companyId
+    const existing = await db
+      .select({ companyId: scheduledCalls.companyId, status: scheduledCalls.status, title: scheduledCalls.title })
+      .from(scheduledCalls)
+      .where(eq(scheduledCalls.id, id));
+
     const result = await db
       .update(scheduledCalls)
       .set({ status: parsed.data.status })
@@ -112,6 +122,17 @@ export async function calendarRoutes(fastify: FastifyInstance): Promise<void> {
 
     if (!result[0]) {
       return reply.status(404).send({ error: 'Scheduled call not found' });
+    }
+
+    if (existing[0]?.companyId) {
+      const statusLabels: Record<string, string> = { pending: 'čaká', done: 'dokončený', cancelled: 'zrušený' };
+      await writeAuditLog(
+        existing[0].companyId,
+        request.user.userId,
+        `plán. hovor: ${existing[0].title || ''}`,
+        statusLabels[existing[0].status || 'pending'] || existing[0].status || '',
+        statusLabels[parsed.data.status] || parsed.data.status,
+      );
     }
 
     return reply.send(result[0]);

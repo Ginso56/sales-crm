@@ -42,7 +42,7 @@ export async function userRoutes(fastify: FastifyInstance): Promise<void> {
   });
 
   fastify.post('/api/users', async (request, reply) => {
-    const preHandler = roleGuard('admin');
+    const preHandler = roleGuard('admin', 'supervisor');
     await preHandler(request, reply);
     if (reply.sent) return;
 
@@ -83,7 +83,7 @@ export async function userRoutes(fastify: FastifyInstance): Promise<void> {
   });
 
   fastify.put('/api/users/:id', async (request, reply) => {
-    const preHandler = roleGuard('admin');
+    const preHandler = roleGuard('admin', 'supervisor');
     await preHandler(request, reply);
     if (reply.sent) return;
 
@@ -122,7 +122,7 @@ export async function userRoutes(fastify: FastifyInstance): Promise<void> {
   });
 
   fastify.delete('/api/users/:id', async (request, reply) => {
-    const preHandler = roleGuard('admin');
+    const preHandler = roleGuard('admin', 'supervisor');
     await preHandler(request, reply);
     if (reply.sent) return;
 

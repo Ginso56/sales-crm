@@ -95,8 +95,11 @@ export async function calendarRoutes(fastify: FastifyInstance): Promise<void> {
       })
       .returning();
 
+    // Get assigned user name for audit
+    const assignedUser = await db.select({ name: users.name }).from(users).where(eq(users.id, parsed.data.assignedTo)).limit(1);
+    const assignedName = assignedUser[0]?.name || '';
     const scheduledDate = new Date(parsed.data.scheduledFor).toLocaleString('sk-SK');
-    await writeAuditLog(parsed.data.companyId, request.user.userId, 'naplánovaný hovor', null, `${parsed.data.title} (${scheduledDate})`);
+    await writeAuditLog(parsed.data.companyId, request.user.userId, 'naplánovaný hovor', null, `${parsed.data.title} (${scheduledDate}) → ${assignedName}`);
 
     return reply.status(201).send(result[0]);
   });

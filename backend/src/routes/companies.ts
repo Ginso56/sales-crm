@@ -8,12 +8,12 @@ import { writeAuditLog } from '../services/auditService.js';
 
 const createCompanySchema = z.object({
   name: z.string().min(1).max(255),
-  phone: z.string().max(50).optional(),
-  email: z.string().email().optional().or(z.literal('')),
-  website: z.string().max(255).optional(),
-  address: z.string().optional(),
-  country: z.string().max(100).optional(),
-  industry: z.string().max(100).optional(),
+  phone: z.string().max(50).optional().nullable(),
+  email: z.string().email().optional().nullable().or(z.literal('')),
+  website: z.string().max(255).optional().nullable(),
+  address: z.string().optional().nullable(),
+  country: z.string().max(100).optional().nullable(),
+  industry: z.string().max(100).optional().nullable(),
   status: z.enum(['new', 'contacted', 'interested', 'not_interested', 'closed']).optional(),
   assignedTo: z.string().uuid().optional().nullable(),
 });

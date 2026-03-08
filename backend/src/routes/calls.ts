@@ -4,6 +4,7 @@ import { db } from '../db/connection.js';
 import { callLogs, companies, users } from '../db/schema.js';
 import { eq, and, sql, desc, gte, lte } from 'drizzle-orm';
 import { authMiddleware } from '../middleware/authMiddleware.js';
+import { writeAuditLog } from '../services/auditService.js';
 
 const callLogSchema = z.object({
   companyId: z.string().uuid(),
@@ -88,6 +89,48 @@ export async function callRoutes(fastify: FastifyInstance): Promise<void> {
       .orderBy(desc(callLogs.createdAt));
 
     return reply.send(logs);
+  });
+
+  fastify.put('/api/calls/:id', async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const schema = z.object({
+      notes: z.string().optional(),
+    });
+    const parsed = schema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.status(400).send({ error: 'Invalid input' });
+    }
+
+    // Fetch existing call
+    const existing = await db
+      .select({ id: callLogs.id, notes: callLogs.notes, companyId: callLogs.companyId })
+      .from(callLogs)
+      .where(eq(callLogs.id, id));
+
+    if (!existing[0]) {
+      return reply.status(404).send({ error: 'Call not found' });
+    }
+
+    const oldNotes = existing[0].notes || '';
+    const newNotes = parsed.data.notes || '';
+
+    if (oldNotes !== newNotes) {
+      await db
+        .update(callLogs)
+        .set({ notes: newNotes })
+        .where(eq(callLogs.id, id));
+
+      // Write audit log
+      await writeAuditLog(
+        existing[0].companyId!,
+        request.user.userId,
+        'poznámka hovoru',
+        oldNotes || null,
+        newNotes || null
+      );
+    }
+
+    return reply.send({ success: true });
   });
 
   fastify.get('/api/calls/today/:userId', async (request, reply) => {

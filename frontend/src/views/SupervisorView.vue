@@ -51,9 +51,9 @@ const teamStats = computed(() => statsStore.teamStats);
 const funnelData = computed(() => {
   if (!teamStats.value) return null;
   return {
-    labels: ['New', 'Contacted', 'Interested', 'Closed'],
+    labels: ['Nový', 'Kontaktovaný', 'Záujem', 'Uzavretý'],
     datasets: [{
-      label: 'Companies',
+      label: 'Firmy',
       data: [
         teamStats.value.funnel.new,
         teamStats.value.funnel.contacted,
@@ -85,18 +85,18 @@ async function saveGoal(): Promise<void> {
       ...goalForm.value,
     });
     showGoalModal.value = false;
-    toast.success('Goal created');
+    toast.success('Cieľ vytvorený');
     if (authStore.userId) {
       await statsStore.fetchTeamStats(authStore.userId);
     }
   } catch {
-    toast.error('Failed to create goal');
+    toast.error('Nepodarilo sa vytvoriť cieľ');
   }
 }
 
 async function handleExport(): Promise<void> {
   await statsStore.exportCsv();
-  toast.success('CSV exported');
+  toast.success('CSV exportované');
 }
 </script>
 
@@ -104,11 +104,11 @@ async function handleExport(): Promise<void> {
   <DashboardShell>
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Team Overview</h1>
-        <p class="text-gray-500 mt-1">Manage your team's performance</p>
+        <h1 class="text-2xl font-bold text-gray-900">Prehľad tímu</h1>
+        <p class="text-gray-500 mt-1">Správa výkonnosti tímu</p>
       </div>
       <Button variant="secondary" @click="handleExport">
-        Export CSV
+        Exportovať CSV
       </Button>
     </div>
 
@@ -131,7 +131,7 @@ async function handleExport(): Promise<void> {
 
         <!-- Conversion Funnel -->
         <div v-if="funnelData" class="card">
-          <h3 class="text-lg font-semibold mb-4">Conversion Funnel</h3>
+          <h3 class="text-lg font-semibold mb-4">Konverzný lievik</h3>
           <Bar :data="funnelData" :options="{ responsive: true, plugins: { legend: { display: false } } }" />
         </div>
       </div>
@@ -139,7 +139,7 @@ async function handleExport(): Promise<void> {
       <!-- Goal Alerts -->
       <div class="card mb-6">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold">Goals</h3>
+          <h3 class="text-lg font-semibold">Ciele</h3>
         </div>
         <div class="space-y-4">
           <div
@@ -154,12 +154,12 @@ async function handleExport(): Promise<void> {
                 color="bg-red-100 text-red-800"
                 size="sm"
               >
-                Behind
+                Zaostáva
               </Badge>
             </div>
             <div class="flex items-center gap-3">
               <span v-if="entry.goalPct !== null" class="text-sm text-gray-600">{{ entry.goalPct }}%</span>
-              <Button size="sm" variant="ghost" @click="openGoalModal(entry.userId)">Set Goal</Button>
+              <Button size="sm" variant="ghost" @click="openGoalModal(entry.userId)">Nastaviť cieľ</Button>
             </div>
           </div>
         </div>
@@ -167,33 +167,33 @@ async function handleExport(): Promise<void> {
     </template>
 
     <!-- Goal Modal -->
-    <Modal :open="showGoalModal" title="Set Goal" @close="showGoalModal = false">
+    <Modal :open="showGoalModal" title="Nastaviť cieľ" @close="showGoalModal = false">
       <form class="space-y-4" @submit.prevent="saveGoal">
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Period Start</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Začiatok obdobia</label>
             <input v-model="goalForm.periodStart" type="date" class="input-field" required />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Period End</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Koniec obdobia</label>
             <input v-model="goalForm.periodEnd" type="date" class="input-field" required />
           </div>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Target Calls</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Cieľ hovorov</label>
           <input v-model.number="goalForm.targetCalls" type="number" class="input-field" min="0" required />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Target New Clients</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Cieľ nových klientov</label>
           <input v-model.number="goalForm.targetNewClients" type="number" class="input-field" min="0" required />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Target Shipments</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Cieľ zásielok</label>
           <input v-model.number="goalForm.targetShipments" type="number" class="input-field" min="0" required />
         </div>
         <div class="flex justify-end gap-3 pt-4">
-          <Button variant="ghost" type="button" @click="showGoalModal = false">Cancel</Button>
-          <Button type="submit">Save Goal</Button>
+          <Button variant="ghost" type="button" @click="showGoalModal = false">Zrušiť</Button>
+          <Button type="submit">Uložiť cieľ</Button>
         </div>
       </form>
     </Modal>

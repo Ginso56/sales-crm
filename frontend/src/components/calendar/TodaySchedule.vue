@@ -19,12 +19,12 @@ onMounted(() => {
 function copyPhone(phone: string | null): void {
   if (!phone) return;
   navigator.clipboard.writeText(phone);
-  toast.info('Phone copied to clipboard');
+  toast.info('Telefón skopírovaný');
 }
 
 async function markDone(id: string): Promise<void> {
   await calendarStore.updateCallStatus(id, 'done');
-  toast.success('Call marked as done');
+  toast.success('Hovor označený ako vybavený');
 }
 
 function formatTime(dateStr: string): string {
@@ -44,7 +44,7 @@ function formatTime(dateStr: string): string {
         </svg>
         DNESNE HOVORY
       </h3>
-      <span class="text-sm text-gray-500">{{ calendarStore.todaySchedule.length }} pending</span>
+      <span class="text-sm text-gray-500">{{ calendarStore.todaySchedule.length }} čakajúcich</span>
     </div>
 
     <div v-if="calendarStore.loading">
@@ -55,7 +55,7 @@ function formatTime(dateStr: string): string {
       <svg class="w-10 h-10 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      <p class="text-gray-500 text-sm">No calls scheduled for today</p>
+      <p class="text-gray-500 text-sm">Na dnes nie sú naplánované žiadne hovory</p>
     </div>
 
     <div v-else class="space-y-3">
@@ -85,7 +85,7 @@ function formatTime(dateStr: string): string {
             </button>
           </div>
         </div>
-        <Button size="sm" variant="success" @click="markDone(call.id)">Done</Button>
+        <Button size="sm" variant="success" @click="markDone(call.id)">Hotovo</Button>
       </div>
     </div>
   </div>

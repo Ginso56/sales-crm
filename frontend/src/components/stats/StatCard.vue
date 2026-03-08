@@ -49,7 +49,7 @@ const colorMap: Record<string, { bg: string; text: string; iconBg: string }> = {
           <span :class="[trend.up ? 'text-green-600' : 'text-red-600', 'text-xs font-medium']">
             {{ trend.pct }}%
           </span>
-          <span class="text-xs text-gray-500">vs last period</span>
+          <span class="text-xs text-gray-500">oproti minulému obdobiu</span>
         </div>
       </div>
       <div :class="[colorMap[color]?.iconBg || 'bg-primary-100', 'p-2.5 rounded-xl']">

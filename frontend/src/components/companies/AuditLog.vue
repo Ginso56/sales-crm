@@ -20,7 +20,7 @@ onMounted(async () => {
 
 <template>
   <div class="card">
-    <h3 class="text-lg font-semibold mb-4">Audit Log</h3>
+    <h3 class="text-lg font-semibold mb-4">História zmien</h3>
 
     <div v-if="loading" class="space-y-4">
       <div v-for="i in 5" :key="i" class="animate-pulse flex gap-3">
@@ -36,7 +36,7 @@ onMounted(async () => {
       <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      <p class="text-gray-500 text-sm">No changes recorded</p>
+      <p class="text-gray-500 text-sm">Žiadne zmeny zaznamenané</p>
     </div>
 
     <div v-else class="relative">
@@ -54,11 +54,11 @@ onMounted(async () => {
               <span class="text-xs text-gray-500">{{ formatDateTime(entry.changedAt) }}</span>
             </div>
             <p class="text-sm text-gray-600">
-              Changed <span class="font-medium">{{ entry.fieldName }}</span>
+              Zmenil <span class="font-medium">{{ entry.fieldName }}</span>
               <template v-if="entry.oldValue">
-                from <span class="text-red-600 line-through">{{ entry.oldValue }}</span>
+                z <span class="text-red-600 line-through">{{ entry.oldValue }}</span>
               </template>
-              to <span class="text-green-600 font-medium">{{ entry.newValue }}</span>
+              na <span class="text-green-600 font-medium">{{ entry.newValue }}</span>
             </p>
           </div>
         </div>

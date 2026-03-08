@@ -16,9 +16,9 @@ const errors = ref<{ email?: string; password?: string }>({});
 
 function validate(): boolean {
   errors.value = {};
-  if (!email.value) errors.value.email = 'Email is required';
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) errors.value.email = 'Invalid email';
-  if (!password.value) errors.value.password = 'Password is required';
+  if (!email.value) errors.value.email = 'E-mail je povinný';
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) errors.value.email = 'Neplatný e-mail';
+  if (!password.value) errors.value.password = 'Heslo je povinné';
   return Object.keys(errors.value).length === 0;
 }
 
@@ -27,13 +27,13 @@ async function handleLogin(): Promise<void> {
   loading.value = true;
   try {
     await authStore.login(email.value, password.value);
-    toast.success('Welcome back!');
+    toast.success('Vitajte späť!');
     const role = authStore.userRole;
     if (role === 'admin') await router.push('/admin');
     else if (role === 'supervisor') await router.push('/supervisor');
     else await router.push('/dashboard');
   } catch {
-    toast.error('Invalid email or password');
+    toast.error('Nesprávny e-mail alebo heslo');
   } finally {
     loading.value = false;
   }
@@ -50,13 +50,13 @@ async function handleLogin(): Promise<void> {
           </svg>
         </div>
         <h1 class="text-2xl font-bold text-white">Sales CRM</h1>
-        <p class="text-gray-400 mt-2">Sign in to your account</p>
+        <p class="text-gray-400 mt-2">Prihláste sa do svojho účtu</p>
       </div>
 
       <form class="bg-white rounded-xl shadow-xl p-8" @submit.prevent="handleLogin">
         <div class="space-y-5">
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
             <input
               id="email"
               v-model="email"
@@ -64,13 +64,13 @@ async function handleLogin(): Promise<void> {
               autocomplete="email"
               class="input-field"
               :class="{ 'border-red-500': errors.email }"
-              placeholder="you@company.com"
+              placeholder="vas@firma.sk"
             />
             <p v-if="errors.email" class="mt-1 text-sm text-red-500">{{ errors.email }}</p>
           </div>
 
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Heslo</label>
             <input
               id="password"
               v-model="password"
@@ -78,13 +78,13 @@ async function handleLogin(): Promise<void> {
               autocomplete="current-password"
               class="input-field"
               :class="{ 'border-red-500': errors.password }"
-              placeholder="Enter your password"
+              placeholder="Zadajte heslo"
             />
             <p v-if="errors.password" class="mt-1 text-sm text-red-500">{{ errors.password }}</p>
           </div>
 
           <Button type="submit" :loading="loading" class="w-full">
-            Sign In
+            Prihlásiť sa
           </Button>
         </div>
       </form>

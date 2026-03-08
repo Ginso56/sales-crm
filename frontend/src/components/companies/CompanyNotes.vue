@@ -41,9 +41,9 @@ async function createNote(): Promise<void> {
       attachments: [],
     });
     newNote.value = '';
-    toast.success('Note added');
+    toast.success('Poznámka pridaná');
   } catch {
-    toast.error('Failed to add note');
+    toast.error('Nepodarilo sa pridať poznámku');
   } finally {
     submitting.value = false;
   }
@@ -53,10 +53,10 @@ async function deleteNote(noteId: string): Promise<void> {
   try {
     await api.delete(`/api/notes/${noteId}`);
     notes.value = notes.value.filter(n => n.id !== noteId);
-    toast.success('Note deleted');
+    toast.success('Poznámka vymazaná');
   } catch (err: unknown) {
     const error = err as { response?: { data?: { error?: string } } };
-    toast.error(error.response?.data?.error || 'Failed to delete note');
+    toast.error(error.response?.data?.error || 'Nepodarilo sa vymazať poznámku');
   }
 }
 
@@ -75,9 +75,9 @@ async function uploadFile(noteId: string, event: Event): Promise<void> {
     if (note) {
       note.attachments.push(response.data);
     }
-    toast.success('File uploaded');
+    toast.success('Súbor nahraný');
   } catch {
-    toast.error('Failed to upload file');
+    toast.error('Nepodarilo sa nahrať súbor');
   }
   input.value = '';
 }
@@ -102,7 +102,7 @@ fetchNotes();
 
 <template>
   <div class="card">
-    <h3 class="text-lg font-semibold mb-4">Notes & Files</h3>
+    <h3 class="text-lg font-semibold mb-4">Poznámky a súbory</h3>
 
     <!-- New note form -->
     <div class="mb-6">
@@ -110,10 +110,10 @@ fetchNotes();
         v-model="newNote"
         rows="3"
         class="input-field text-sm mb-2"
-        placeholder="Write a note... (supports markdown)"
+        placeholder="Napíšte poznámku..."
       />
       <Button size="sm" :loading="submitting" :disabled="!newNote.trim()" @click="createNote">
-        Add Note
+        Pridať poznámku
       </Button>
     </div>
 
@@ -130,7 +130,7 @@ fetchNotes();
       <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
       </svg>
-      <p class="text-gray-500 text-sm">No notes yet</p>
+      <p class="text-gray-500 text-sm">Zatiaľ žiadne poznámky</p>
     </div>
 
     <div v-else class="space-y-4">

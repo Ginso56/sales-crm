@@ -24,7 +24,7 @@ onMounted(async () => {
 const stats = computed(() => statsStore.userStats);
 
 const donutData = computed(() => ({
-  labels: ['Answered', 'No Answer'],
+  labels: ['Zdvihnuté', 'Nezdvihnuté'],
   datasets: [
     {
       data: [stats.value?.answeredMonth || 0, stats.value?.noAnswerMonth || 0],
@@ -38,8 +38,8 @@ const donutData = computed(() => ({
 <template>
   <DashboardShell>
     <div class="mb-6">
-      <h1 class="text-2xl font-bold text-gray-900">Statistics</h1>
-      <p class="text-gray-500 mt-1">Your performance overview</p>
+      <h1 class="text-2xl font-bold text-gray-900">Štatistiky</h1>
+      <p class="text-gray-500 mt-1">Prehľad vášho výkonu</p>
     </div>
 
     <div v-if="statsStore.loading">
@@ -50,26 +50,26 @@ const donutData = computed(() => ({
 
     <template v-else-if="stats">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard title="Calls Today" :value="stats.callsToday" color="primary" />
-        <StatCard title="Calls This Week" :value="stats.callsWeek" color="green" />
-        <StatCard title="Calls This Month" :value="stats.callsMonth" :previous-value="stats.callsPrevMonth" color="amber" />
-        <StatCard title="Shipments This Month" :value="stats.shipmentsMonth" color="primary" />
+        <StatCard title="Hovory dnes" :value="stats.callsToday" color="primary" />
+        <StatCard title="Hovory tento týždeň" :value="stats.callsWeek" color="green" />
+        <StatCard title="Hovory tento mesiac" :value="stats.callsMonth" :previous-value="stats.callsPrevMonth" color="amber" />
+        <StatCard title="Zásielky tento mesiac" :value="stats.shipmentsMonth" color="primary" />
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div class="card">
-          <h3 class="text-lg font-semibold mb-4">Answer Rate</h3>
+          <h3 class="text-lg font-semibold mb-4">Úspešnosť hovorov</h3>
           <div class="max-w-[250px] mx-auto">
             <Doughnut :data="donutData" :options="{ responsive: true, plugins: { legend: { position: 'bottom' } }, cutout: '65%' }" />
           </div>
         </div>
 
         <div v-if="stats.currentGoal" class="card">
-          <h3 class="text-lg font-semibold mb-4">Goal Progress</h3>
+          <h3 class="text-lg font-semibold mb-4">Plnenie cieľov</h3>
           <div class="space-y-4">
-            <GoalProgressBar label="Calls" :current="stats.callsMonth" :target="stats.currentGoal.targetCalls" />
-            <GoalProgressBar label="New Clients" :current="stats.companiesAddedMonth" :target="stats.currentGoal.targetNewClients" />
-            <GoalProgressBar label="Shipments" :current="stats.shipmentsMonth" :target="stats.currentGoal.targetShipments" />
+            <GoalProgressBar label="Hovory" :current="stats.callsMonth" :target="stats.currentGoal.targetCalls" />
+            <GoalProgressBar label="Noví klienti" :current="stats.companiesAddedMonth" :target="stats.currentGoal.targetNewClients" />
+            <GoalProgressBar label="Zásielky" :current="stats.shipmentsMonth" :target="stats.currentGoal.targetShipments" />
           </div>
         </div>
       </div>

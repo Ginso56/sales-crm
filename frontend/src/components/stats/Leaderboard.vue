@@ -11,18 +11,18 @@ defineProps<Props>();
 
 <template>
   <div class="card">
-    <h3 class="text-lg font-semibold mb-4">Team Leaderboard</h3>
+    <h3 class="text-lg font-semibold mb-4">Rebríček tímu</h3>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead>
           <tr>
             <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">#</th>
-            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Calls</th>
-            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Answer %</th>
-            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">New Clients</th>
-            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Shipments</th>
-            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Goal %</th>
+            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Meno</th>
+            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Hovory</th>
+            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Úspešnosť %</th>
+            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Noví klienti</th>
+            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Zásielky</th>
+            <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Cieľ %</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">

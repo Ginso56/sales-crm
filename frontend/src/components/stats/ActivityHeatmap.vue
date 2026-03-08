@@ -53,7 +53,7 @@ function formatDate(dateStr: string): string {
 
 <template>
   <div class="card">
-    <h3 class="text-lg font-semibold mb-4">Activity (Last 90 Days)</h3>
+    <h3 class="text-lg font-semibold mb-4">Aktivita (posledných 90 dní)</h3>
     <div class="overflow-x-auto">
       <svg :width="14 * 14" height="7 * 14 + 20" class="block">
         <g v-for="cell in cells" :key="cell.date">
@@ -66,17 +66,17 @@ function formatDate(dateStr: string): string {
             :fill="getColor(cell.count)"
             class="cursor-pointer"
           >
-            <title>{{ formatDate(cell.date) }}: {{ cell.count }} calls</title>
+            <title>{{ formatDate(cell.date) }}: {{ cell.count }} hovorov</title>
           </rect>
         </g>
       </svg>
     </div>
     <div class="flex items-center gap-1 mt-2 text-xs text-gray-500">
-      <span>Less</span>
+      <span>Menej</span>
       <svg v-for="(color, i) in ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39']" :key="i" width="11" height="11">
         <rect width="11" height="11" rx="2" :fill="color" />
       </svg>
-      <span>More</span>
+      <span>Viac</span>
     </div>
   </div>
 </template>

@@ -46,24 +46,24 @@ function save(): void {
 <template>
   <div class="card">
     <div class="flex items-center justify-between mb-6">
-      <h3 class="text-lg font-semibold">Company Information</h3>
+      <h3 class="text-lg font-semibold">Informácie o firme</h3>
       <div class="flex gap-2">
-        <Button v-if="!editing" variant="secondary" size="sm" @click="startEdit">Edit</Button>
+        <Button v-if="!editing" variant="secondary" size="sm" @click="startEdit">Upraviť</Button>
         <template v-else>
-          <Button variant="ghost" size="sm" @click="cancelEdit">Cancel</Button>
-          <Button size="sm" @click="save">Save</Button>
+          <Button variant="ghost" size="sm" @click="cancelEdit">Zrušiť</Button>
+          <Button size="sm" @click="save">Uložiť</Button>
         </template>
       </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div v-for="field in [
-        { key: 'name', label: 'Name', type: 'text' },
-        { key: 'phone', label: 'Phone', type: 'tel' },
-        { key: 'email', label: 'Email', type: 'email' },
-        { key: 'website', label: 'Website', type: 'url' },
-        { key: 'country', label: 'Country', type: 'text' },
-        { key: 'industry', label: 'Industry', type: 'text' },
+        { key: 'name', label: 'Názov', type: 'text' },
+        { key: 'phone', label: 'Telefón', type: 'tel' },
+        { key: 'email', label: 'E-mail', type: 'email' },
+        { key: 'website', label: 'Web', type: 'url' },
+        { key: 'country', label: 'Krajina', type: 'text' },
+        { key: 'industry', label: 'Kategória', type: 'text' },
       ]" :key="field.key" class="space-y-1">
         <label class="text-xs font-medium text-gray-500 uppercase">{{ field.label }}</label>
         <input
@@ -78,7 +78,7 @@ function save(): void {
       </div>
 
       <div class="space-y-1">
-        <label class="text-xs font-medium text-gray-500 uppercase">Status</label>
+        <label class="text-xs font-medium text-gray-500 uppercase">Stav</label>
         <select
           v-if="editing"
           v-model="form.status"
@@ -92,7 +92,7 @@ function save(): void {
       </div>
 
       <div class="md:col-span-2 space-y-1">
-        <label class="text-xs font-medium text-gray-500 uppercase">Address</label>
+        <label class="text-xs font-medium text-gray-500 uppercase">Adresa</label>
         <textarea
           v-if="editing"
           v-model="form.address"

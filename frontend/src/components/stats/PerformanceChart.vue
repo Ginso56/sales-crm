@@ -24,12 +24,12 @@ const chartData = computed(() => ({
   labels: props.data.map(d => d.name),
   datasets: [
     {
-      label: 'Answered',
+      label: 'Zdvihnuté',
       data: props.data.map(d => d.answered),
       backgroundColor: '#22c55e',
     },
     {
-      label: 'No Answer',
+      label: 'Nezdvihnuté',
       data: props.data.map(d => d.noAnswer),
       backgroundColor: '#ef4444',
     },
@@ -50,7 +50,7 @@ const chartOptions = {
 
 <template>
   <div class="card">
-    <h3 class="text-lg font-semibold mb-4">Per-Salesman Performance</h3>
+    <h3 class="text-lg font-semibold mb-4">Výkon predajcov</h3>
     <Bar :data="chartData" :options="chartOptions" />
   </div>
 </template>

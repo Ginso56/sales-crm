@@ -68,28 +68,28 @@ async function saveUser(): Promise<void> {
       };
       if (form.value.password) data.password = form.value.password;
       await api.put(`/api/users/${editingUser.value.id}`, data);
-      toast.success('User updated');
+      toast.success('Používateľ aktualizovaný');
     } else {
       await api.post('/api/users', form.value);
-      toast.success('User created');
+      toast.success('Používateľ vytvorený');
     }
     showModal.value = false;
     await fetchUsers();
   } catch (err: unknown) {
     const error = err as { response?: { data?: { error?: string } } };
-    toast.error(error.response?.data?.error || 'Failed to save user');
+    toast.error(error.response?.data?.error || 'Nepodarilo sa uložiť používateľa');
   }
 }
 
 async function deleteUser(user: User): Promise<void> {
-  if (!confirm(`Delete user ${user.name}?`)) return;
+  if (!confirm(`Vymazať používateľa ${user.name}?`)) return;
   try {
     await api.delete(`/api/users/${user.id}`);
-    toast.success('User deleted');
+    toast.success('Používateľ vymazaný');
     await fetchUsers();
   } catch (err: unknown) {
     const error = err as { response?: { data?: { error?: string } } };
-    toast.error(error.response?.data?.error || 'Failed to delete user');
+    toast.error(error.response?.data?.error || 'Nepodarilo sa vymazať používateľa');
   }
 }
 
@@ -103,19 +103,19 @@ const roleColors: Record<string, string> = {
 <template>
   <div>
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-semibold">User Management</h3>
-      <Button size="sm" @click="openCreate">Add User</Button>
+      <h3 class="text-lg font-semibold">Správa používateľov</h3>
+      <Button size="sm" @click="openCreate">Pridať používateľa</Button>
     </div>
 
     <div class="overflow-x-auto rounded-lg border border-gray-200">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
-            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Meno</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">E-mail</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rola</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Vytvorený</th>
+            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Akcie</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
@@ -137,8 +137,8 @@ const roleColors: Record<string, string> = {
             <td class="px-4 py-3 text-sm text-gray-500">{{ formatDate(user.createdAt) }}</td>
             <td class="px-4 py-3 text-right">
               <div class="flex items-center justify-end gap-2">
-                <button class="text-primary-600 hover:text-primary-800 text-sm" @click="openEdit(user)">Edit</button>
-                <button class="text-red-600 hover:text-red-800 text-sm" @click="deleteUser(user)">Delete</button>
+                <button class="text-primary-600 hover:text-primary-800 text-sm" @click="openEdit(user)">Upraviť</button>
+                <button class="text-red-600 hover:text-red-800 text-sm" @click="deleteUser(user)">Vymazať</button>
               </div>
             </td>
           </tr>
@@ -146,40 +146,40 @@ const roleColors: Record<string, string> = {
       </table>
     </div>
 
-    <Modal :open="showModal" :title="editingUser ? 'Edit User' : 'Create User'" @close="showModal = false">
+    <Modal :open="showModal" :title="editingUser ? 'Upraviť používateľa' : 'Vytvoriť používateľa'" @close="showModal = false">
       <form class="space-y-4" @submit.prevent="saveUser">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Meno</label>
           <input v-model="form.name" type="text" class="input-field" required />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
           <input v-model="form.email" type="email" class="input-field" required />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            Password {{ editingUser ? '(leave blank to keep current)' : '' }}
+            Heslo {{ editingUser ? '(nechajte prázdne pre zachovanie)' : '' }}
           </label>
           <input v-model="form.password" type="password" class="input-field" :required="!editingUser" minlength="6" />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Rola</label>
           <select v-model="form.role" class="input-field">
-            <option value="admin">Admin</option>
-            <option value="supervisor">Supervisor</option>
-            <option value="salesman">Salesman</option>
+            <option value="admin">Administrátor</option>
+            <option value="supervisor">Supervízor</option>
+            <option value="salesman">Predajca</option>
           </select>
         </div>
         <div v-if="form.role === 'salesman'">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Supervisor</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Supervízor</label>
           <select v-model="form.supervisorId" class="input-field">
-            <option :value="null">None</option>
+            <option :value="null">Žiadny</option>
             <option v-for="sup in supervisors" :key="sup.id" :value="sup.id">{{ sup.name }}</option>
           </select>
         </div>
         <div class="flex justify-end gap-3 pt-4">
-          <Button variant="ghost" type="button" @click="showModal = false">Cancel</Button>
-          <Button type="submit">{{ editingUser ? 'Update' : 'Create' }}</Button>
+          <Button variant="ghost" type="button" @click="showModal = false">Zrušiť</Button>
+          <Button type="submit">{{ editingUser ? 'Aktualizovať' : 'Vytvoriť' }}</Button>
         </div>
       </form>
     </Modal>

@@ -18,10 +18,10 @@ export function useCallLog() {
         status: 'answered',
         ...data,
       });
-      toast.success('Call logged as answered');
+      toast.success('Hovor zaznamenaný ako zdvihnutý');
       return true;
     } catch {
-      toast.error('Failed to log call');
+      toast.error('Nepodarilo sa zaznamenať hovor');
       return false;
     }
   }
@@ -32,10 +32,10 @@ export function useCallLog() {
         companyId,
         status: 'no_answer',
       });
-      toast.warning('Call logged as no answer');
+      toast.warning('Hovor zaznamenaný ako nezdvihnutý');
       return true;
     } catch {
-      toast.error('Failed to log call');
+      toast.error('Nepodarilo sa zaznamenať hovor');
       return false;
     }
   }

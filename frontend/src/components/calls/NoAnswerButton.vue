@@ -25,6 +25,6 @@ function handleClick(): void {
     size="sm"
     @click="handleClick"
   >
-    {{ confirming ? 'Confirm?' : 'NEZDVIHOL' }}
+    {{ confirming ? 'Potvrdiť?' : 'NEZDVIHOL' }}
   </Button>
 </template>

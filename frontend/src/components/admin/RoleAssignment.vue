@@ -9,9 +9,9 @@ interface Props {
 defineProps<Props>();
 
 const roleInfo: Record<UserRole, { label: string; color: string; description: string }> = {
-  admin: { label: 'Admin', color: 'bg-purple-100 text-purple-800', description: 'Full system access' },
-  supervisor: { label: 'Supervisor', color: 'bg-blue-100 text-blue-800', description: 'Team management' },
-  salesman: { label: 'Salesman', color: 'bg-green-100 text-green-800', description: 'Sales operations' },
+  admin: { label: 'Administrátor', color: 'bg-purple-100 text-purple-800', description: 'Plný prístup' },
+  supervisor: { label: 'Supervízor', color: 'bg-blue-100 text-blue-800', description: 'Správa tímu' },
+  salesman: { label: 'Predajca', color: 'bg-green-100 text-green-800', description: 'Predajné operácie' },
 };
 </script>
 

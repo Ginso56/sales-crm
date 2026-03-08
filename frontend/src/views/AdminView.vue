@@ -24,8 +24,8 @@ onMounted(async () => {
 });
 
 const tabs = [
-  { key: 'overview', label: 'Overview' },
-  { key: 'users', label: 'Users' },
+  { key: 'overview', label: 'Prehľad' },
+  { key: 'users', label: 'Používatelia' },
   { key: 'import', label: 'CSV Import' },
 ] as const;
 
@@ -38,10 +38,10 @@ async function handleExport(): Promise<void> {
   <DashboardShell>
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Admin Panel</h1>
-        <p class="text-gray-500 mt-1">System administration</p>
+        <h1 class="text-2xl font-bold text-gray-900">Administrácia</h1>
+        <p class="text-gray-500 mt-1">Správa systému</p>
       </div>
-      <Button variant="secondary" @click="handleExport">Export Team CSV</Button>
+      <Button variant="secondary" @click="handleExport">Exportovať CSV</Button>
     </div>
 
     <!-- Tabs -->
@@ -72,10 +72,10 @@ async function handleExport(): Promise<void> {
       </div>
       <template v-else-if="statsStore.overview">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <StatCard title="Total Companies" :value="statsStore.overview.totalCompanies" color="primary" />
-          <StatCard title="Calls This Month" :value="statsStore.overview.totalCallsMonth" color="green" />
-          <StatCard title="Answered This Month" :value="statsStore.overview.totalAnsweredMonth" color="amber" />
-          <StatCard title="Total Users" :value="statsStore.overview.totalUsers" color="primary" />
+          <StatCard title="Celkom firiem" :value="statsStore.overview.totalCompanies" color="primary" />
+          <StatCard title="Hovory tento mesiac" :value="statsStore.overview.totalCallsMonth" color="green" />
+          <StatCard title="Zdvihnuté tento mesiac" :value="statsStore.overview.totalAnsweredMonth" color="amber" />
+          <StatCard title="Celkom používateľov" :value="statsStore.overview.totalUsers" color="primary" />
         </div>
 
         <div v-if="statsStore.teamStats" class="space-y-6">

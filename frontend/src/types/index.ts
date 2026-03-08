@@ -166,11 +166,11 @@ export const STATUS_COLORS: Record<CompanyStatus, string> = {
 };
 
 export const STATUS_LABELS: Record<CompanyStatus, string> = {
-  new: 'New',
-  contacted: 'Contacted',
-  interested: 'Interested',
-  not_interested: 'Not Interested',
-  closed: 'Closed',
+  new: 'Nový',
+  contacted: 'Kontaktovaný',
+  interested: 'Záujem',
+  not_interested: 'Bez záujmu',
+  closed: 'Uzavretý',
 };
 
 export const CALL_STATUS_COLORS: Record<CallStatus, string> = {

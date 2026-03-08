@@ -55,20 +55,20 @@ function handleSubmit(): void {
 </script>
 
 <template>
-  <Modal :open="open" :title="`Schedule Call - ${companyName}`" @close="emit('close')">
+  <Modal :open="open" :title="`Naplánovať hovor - ${companyName}`" @close="emit('close')">
     <form class="space-y-4" @submit.prevent="handleSubmit">
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-        <input v-model="title" type="text" class="input-field" placeholder="Follow-up call" required />
+        <label class="block text-sm font-medium text-gray-700 mb-1">Názov</label>
+        <input v-model="title" type="text" class="input-field" placeholder="Spätný hovor" required />
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Schedule For</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Naplánovať na</label>
         <input v-model="scheduledFor" type="datetime-local" class="input-field" required />
       </div>
 
       <div v-if="authStore.userRole !== 'salesman'">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Assign To</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Prideliť</label>
         <select v-model="assignedTo" class="input-field">
           <option v-for="user in salespeople" :key="user.id" :value="user.id">
             {{ user.name }} ({{ user.role }})
@@ -77,8 +77,8 @@ function handleSubmit(): void {
       </div>
 
       <div class="flex justify-end gap-3 pt-4">
-        <Button variant="ghost" type="button" @click="emit('close')">Cancel</Button>
-        <Button type="submit" :loading="submitting">Schedule</Button>
+        <Button variant="ghost" type="button" @click="emit('close')">Zrušiť</Button>
+        <Button type="submit" :loading="submitting">Naplánovať</Button>
       </div>
     </form>
   </Modal>

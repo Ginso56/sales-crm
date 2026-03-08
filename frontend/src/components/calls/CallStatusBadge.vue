@@ -10,10 +10,10 @@ interface Props {
 defineProps<Props>();
 
 const labels: Record<CallStatus, string> = {
-  answered: 'Answered',
-  no_answer: 'No Answer',
-  scheduled: 'Scheduled',
-  callback: 'Callback',
+  answered: 'Zdvihnuté',
+  no_answer: 'Nezdvihnuté',
+  scheduled: 'Naplánované',
+  callback: 'Spätný hovor',
 };
 </script>
 

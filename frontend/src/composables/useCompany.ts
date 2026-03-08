@@ -9,10 +9,10 @@ export function useCompany() {
   async function saveCompany(id: string, data: Partial<Company>): Promise<boolean> {
     try {
       await store.updateCompany(id, data);
-      toast.success('Company updated successfully');
+      toast.success('Firma bola aktualizovaná');
       return true;
     } catch {
-      toast.error('Failed to update company');
+      toast.error('Nepodarilo sa aktualizovať firmu');
       return false;
     }
   }
@@ -20,10 +20,10 @@ export function useCompany() {
   async function createCompany(data: Partial<Company>): Promise<Company | null> {
     try {
       const company = await store.createCompany(data);
-      toast.success('Company created successfully');
+      toast.success('Firma bola vytvorená');
       return company;
     } catch {
-      toast.error('Failed to create company');
+      toast.error('Nepodarilo sa vytvoriť firmu');
       return null;
     }
   }

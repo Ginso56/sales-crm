@@ -62,34 +62,34 @@ function handleKeydown(e: KeyboardEvent): void {
 </script>
 
 <template>
-  <Modal :open="open" :title="`Log Call - ${companyName}`" size="lg" @close="emit('close')">
+  <Modal :open="open" :title="`Zaznamenať hovor - ${companyName}`" size="lg" @close="emit('close')">
     <form class="space-y-4" @submit.prevent="handleSubmit">
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Called At</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Čas hovoru</label>
         <input v-model="calledAt" type="datetime-local" class="input-field" />
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Shipping Company</label>
-        <input v-model="shippingCompany" type="text" class="input-field" placeholder="Enter shipping company name" />
+        <label class="block text-sm font-medium text-gray-700 mb-1">Prepravná spoločnosť</label>
+        <input v-model="shippingCompany" type="text" class="input-field" placeholder="Názov prepravnej spoločnosti" />
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Shipment Count</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Počet zásielok</label>
         <input v-model.number="shipmentCount" type="number" min="0" class="input-field" />
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Shipment Destinations</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Destinácie zásielok</label>
         <div class="flex gap-2 mb-2">
           <input
             v-model="destinationInput"
             type="text"
             class="input-field flex-1"
-            placeholder="Add a country"
+            placeholder="Pridať krajinu"
             @keydown="handleKeydown"
           />
-          <Button type="button" variant="secondary" size="sm" @click="addDestination">Add</Button>
+          <Button type="button" variant="secondary" size="sm" @click="addDestination">Pridať</Button>
         </div>
         <div class="flex flex-wrap gap-2">
           <span
@@ -108,13 +108,13 @@ function handleKeydown(e: KeyboardEvent): void {
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-        <textarea v-model="notes" rows="3" class="input-field" placeholder="Additional notes..." />
+        <label class="block text-sm font-medium text-gray-700 mb-1">Poznámky</label>
+        <textarea v-model="notes" rows="3" class="input-field" placeholder="Doplňujúce poznámky..." />
       </div>
 
       <div class="flex justify-end gap-3 pt-4">
-        <Button variant="ghost" type="button" @click="emit('close')">Cancel</Button>
-        <Button type="submit" :loading="submitting">Save Call</Button>
+        <Button variant="ghost" type="button" @click="emit('close')">Zrušiť</Button>
+        <Button type="submit" :loading="submitting">Uložiť hovor</Button>
       </div>
     </form>
   </Modal>

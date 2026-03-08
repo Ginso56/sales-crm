@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import DashboardShell from '@/components/layout/DashboardShell.vue';
 import CompanyCard from '@/components/companies/CompanyCard.vue';
@@ -34,12 +34,34 @@ const toast = useToast();
 const activeTab = ref<'info' | 'calls' | 'notes' | 'audit'>('info');
 const showCallModal = ref(false);
 const showScheduleModal = ref(false);
+const showStatusDropdown = ref(false);
+
+const allStatuses: CompanyStatus[] = ['new', 'contacted', 'interested', 'not_interested', 'closed'];
+
+async function changeStatus(status: CompanyStatus): Promise<void> {
+  showStatusDropdown.value = false;
+  if (company.value?.status === status) return;
+  await saveCompany(companyId, { status });
+  await companiesStore.fetchCompany(companyId);
+}
+
+function handleClickOutside(event: MouseEvent): void {
+  const target = event.target as HTMLElement;
+  if (!target.closest('.status-dropdown-wrapper')) {
+    showStatusDropdown.value = false;
+  }
+}
 
 onMounted(async () => {
+  document.addEventListener('click', handleClickOutside);
   await Promise.all([
     companiesStore.fetchCompany(companyId),
     callsStore.fetchCallLogs(companyId),
   ]);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
 });
 
 const company = computed(() => companiesStore.currentCompany);
@@ -154,9 +176,44 @@ const tabs = [
                     </svg>
                   </h1>
                   <div class="flex items-center gap-2 mt-0.5">
-                    <Badge :color="STATUS_COLORS[company.status as CompanyStatus]" size="sm">
-                      {{ STATUS_LABELS[company.status as CompanyStatus] }}
-                    </Badge>
+                    <div class="relative status-dropdown-wrapper">
+                      <button
+                        class="cursor-pointer hover:ring-2 hover:ring-primary-200 rounded-full transition-all"
+                        @click.stop="showStatusDropdown = !showStatusDropdown"
+                        title="Klikni pre zmenu stavu"
+                      >
+                        <Badge :color="STATUS_COLORS[company.status as CompanyStatus]" size="sm">
+                          {{ STATUS_LABELS[company.status as CompanyStatus] }}
+                          <svg class="w-3 h-3 ml-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </Badge>
+                      </button>
+                      <div
+                        v-if="showStatusDropdown"
+                        class="absolute left-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[160px]"
+                      >
+                        <button
+                          v-for="s in allStatuses"
+                          :key="s"
+                          class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 transition-colors"
+                          :class="{ 'bg-gray-50 font-medium': company.status === s }"
+                          @click="changeStatus(s)"
+                        >
+                          <span class="w-2 h-2 rounded-full flex-shrink-0" :class="{
+                            'bg-indigo-500': s === 'new',
+                            'bg-yellow-500': s === 'contacted',
+                            'bg-green-500': s === 'interested',
+                            'bg-red-500': s === 'not_interested',
+                            'bg-gray-400': s === 'closed',
+                          }" />
+                          {{ STATUS_LABELS[s] }}
+                          <svg v-if="company.status === s" class="w-4 h-4 ml-auto text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                     <span v-if="company.industry" class="text-xs text-gray-400">{{ company.industry }}</span>
                     <span v-if="company.country" class="text-xs text-gray-400">· {{ company.country }}</span>
                   </div>
